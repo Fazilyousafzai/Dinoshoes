@@ -38,8 +38,33 @@ export function CheckoutForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await placeOrder(values);
-      setReference(result);
+      // --- WHATSAPP CHECKOUT LOGIC ---
+      // Commented out online pending order:
+      // const result = await placeOrder(values);
+      // setReference(result);
+
+      let message = `*New Order Request* 🛒\n\n`;
+      message += `*Customer Details:*\n`;
+      message += `Name: ${values.customerName}\n`;
+      message += `Phone: ${values.phone}\n`;
+      message += `Address: ${values.address}, ${values.city} ${values.postalCode}\n`;
+      if (values.notes) message += `Notes: ${values.notes}\n`;
+
+      message += `\n*Order Details:*\n`;
+      cart.forEach((line) => {
+        message += `- ${line.quantity}x ${line.product.name} (Size: ${line.size})\n`;
+      });
+      message += `\n*Total:* ${formatPrice(cartTotal)}`;
+
+      const whatsappNumber = "923319441845"; // Client's WhatsApp number (country code without +)
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+      // Redirect the user to WhatsApp
+      window.open(whatsappUrl, "_blank");
+      
+      // Show success screen on our site as a fallback
+      setReference("WHATSAPP-" + Date.now().toString().slice(-6));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "The order could not be placed. Please try again.");
     } finally {
@@ -53,11 +78,14 @@ export function CheckoutForm() {
     return (
       <div className="mx-auto flex min-h-[70dvh] max-w-2xl flex-col items-center justify-center px-4 text-center">
         <CheckCircle size={54} weight="fill" className="text-success" />
-        <h1 className="display-type mt-5 text-6xl text-ink">ORDER RECEIVED.</h1>
+        <h1 className="display-type mt-5 text-6xl text-ink">ORDER SENT TO WHATSAPP.</h1>
         <p className="mt-4 max-w-md text-base leading-7 text-ink-soft">
-          Your reference is <strong className="text-ink">{reference}</strong>. This order remains pending until payment and shipping are configured.
+          We have redirected you to WhatsApp to complete your order. If the chat didn't open automatically, please click below.
         </p>
-        <Link href="/shop" className="button-press mt-7 min-h-12 bg-ink px-6 py-3 font-extrabold text-paper hover:bg-cobalt">
+        <button onClick={() => window.open(`https://wa.me/923319441845`, "_blank")} className="button-press mt-7 min-h-12 bg-action px-6 py-3 font-extrabold text-[#f7f7f4] hover:bg-action-hover">
+          Open WhatsApp
+        </button>
+        <Link href="/shop" className="mt-4 text-sm font-bold text-ink underline hover:text-cobalt">
           Return to shop
         </Link>
       </div>
@@ -117,10 +145,10 @@ export function CheckoutForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="button-press flex min-h-13 items-center justify-center gap-3 bg-action px-6 font-extrabold text-[#f7f7f4] hover:bg-action-hover sm:col-span-2"
+              className="button-press flex min-h-13 items-center justify-center gap-3 bg-[#25D366] px-6 font-extrabold text-white hover:bg-[#128C7E] sm:col-span-2"
             >
               <PaperPlaneTilt size={20} weight="bold" />
-              {submitting ? "Placing order..." : "Place pending order"}
+              {submitting ? "Redirecting..." : "Order via WhatsApp"}
             </button>
           </form>
         </div>
@@ -143,9 +171,9 @@ export function CheckoutForm() {
             <span className="text-lg font-extrabold text-ink">{formatPrice(cartTotal)}</span>
           </div>
           <div className="mt-6 flex gap-3 border-t border-line pt-5">
-            <LockKey size={20} weight="bold" className="shrink-0 text-cobalt" />
+            <LockKey size={20} weight="bold" className="shrink-0 text-[#25D366]" />
             <p className="text-xs leading-5 text-muted">
-              {isLive ? "Order data is sent to Supabase through a validated database function." : "Demo mode stores no payment details and creates a local reference only."}
+              Checkout redirects to WhatsApp to finalize your order directly with our team.
             </p>
           </div>
         </aside>
