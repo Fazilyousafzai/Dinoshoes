@@ -8,9 +8,9 @@ export const categoryLabels: Record<Category, string> = {
 };
 
 export function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-PK", {
     style: "currency",
-    currency: "USD",
+    currency: "PKR",
     maximumFractionDigits: 0,
   }).format(value);
 }
