@@ -381,7 +381,7 @@ function Overview({
 type PreviewFile = { file: File; url: string };
 
 function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose: () => void; onSaved: (name: string) => void }) {
-  const { saveProduct, products } = useStore();
+  const { saveProduct, products, categories } = useStore();
   const existingCategories = Array.from(new Set(products.map(p => p.category)));
   const [draft, setDraft] = useState<ProductDraft>(() => ({
     id: product?.id,
@@ -465,7 +465,7 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
         <AdminField label="Category" helper="Select a category for this product.">
           <select required value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input">
             <option value="" disabled>Select category...</option>
-            {store.categories.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.id} value={cat.slug}>{cat.name}</option>
             ))}
           </select>
