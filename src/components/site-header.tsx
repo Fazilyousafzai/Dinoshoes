@@ -14,8 +14,6 @@ import { useStore } from "./app-provider";
 
 const links = [
   { href: "/shop", label: "Shop" },
-  { href: "/shop?category=studs", label: "Studs" },
-  { href: "/shop?category=grippers", label: "Grippers" },
   { href: "/reviews", label: "Reviews" },
 ];
 
