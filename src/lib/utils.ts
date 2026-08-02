@@ -1,11 +1,9 @@
 import type { Category } from "./types";
 
-export const categoryLabels: Record<Category, string> = {
-  studs: "Football Studs",
-  grippers: "Grippers",
-  socks: "Socks",
-  footballs: "Footballs",
-};
+export function formatCategory(value: Category) {
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
 export function formatPrice(value: number) {
   return new Intl.NumberFormat("en-PK", {

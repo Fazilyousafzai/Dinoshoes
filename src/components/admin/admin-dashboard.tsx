@@ -23,7 +23,7 @@ import {
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
 import type { Category, Product, ProductDraft, ReviewStatus } from "@/lib/types";
-import { categoryLabels, formatPrice, slugify } from "@/lib/utils";
+import { formatCategory, formatPrice, slugify } from "@/lib/utils";
 import { useStore } from "../app-provider";
 import { ProductImage } from "../product-image";
 
@@ -193,7 +193,7 @@ export function AdminDashboard() {
                         </div>
                         <div className="min-w-0">
                           <h3 className="truncate text-sm font-extrabold text-ink">{product.name}</h3>
-                          <p className="mt-1 text-xs text-muted">{categoryLabels[product.category]} | {formatPrice(product.price)}</p>
+                          <p className="mt-1 text-xs text-muted">{formatCategory(product.category)} | {formatPrice(product.price)}</p>
                           <p className={`mt-2 text-xs font-bold ${product.stock <= 10 ? "text-warning" : "text-success"}`}>{product.stock} in stock</p>
                         </div>
                         <div className="col-span-2 flex gap-2 sm:col-span-1">
@@ -297,13 +297,14 @@ function Overview({
 type PreviewFile = { file: File; url: string };
 
 function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose: () => void; onSaved: (name: string) => void }) {
-  const { saveProduct } = useStore();
+  const { saveProduct, products } = useStore();
+  const existingCategories = Array.from(new Set(products.map(p => p.category)));
   const [draft, setDraft] = useState<ProductDraft>(() => ({
     id: product?.id,
     createdAt: product?.createdAt,
     slug: product?.slug ?? "",
     name: product?.name ?? "",
-    category: product?.category ?? "studs",
+    category: product?.category ?? "",
     description: product?.description ?? "",
     price: product?.price ?? 0,
     compareAtPrice: product?.compareAtPrice,
@@ -377,10 +378,11 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <AdminField label="Product name"><input required value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" maxLength={120} /></AdminField>
         <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from product name" maxLength={140} /></AdminField>
-        <AdminField label="Category">
-          <select value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value as Category })} className="field-input">
-            {(Object.keys(categoryLabels) as Category[]).map((category) => <option key={category} value={category}>{categoryLabels[category]}</option>)}
-          </select>
+        <AdminField label="Category" helper="Select or type a new category.">
+          <input list="category-options" required value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input" placeholder="e.g. studs" />
+          <datalist id="category-options">
+            {existingCategories.map((cat) => <option key={cat} value={cat} />)}
+          </datalist>
         </AdminField>
         <AdminField label="Sizes" helper="Separate options with commas."><input required value={sizeInput} onChange={(event) => setSizeInput(event.target.value)} className="field-input" placeholder="6, 7, 8, 9" /></AdminField>
         <AdminField label="Price"><input required type="number" min="0" step="0.01" value={draft.price} onChange={(event) => setDraft({ ...draft, price: Number(event.target.value) })} className="field-input" /></AdminField>

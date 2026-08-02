@@ -1,4 +1,4 @@
-export type Category = "studs" | "grippers" | "socks" | "footballs";
+export type Category = string;
 
 export type Product = {
   id: string;

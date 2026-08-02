@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle, Heart, ShoppingBagOpen } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
-import { categoryLabels, formatPrice } from "@/lib/utils";
+import { formatCategory, formatPrice } from "@/lib/utils";
 import { useStore } from "./app-provider";
 import { ProductImage } from "./product-image";
 
@@ -53,7 +53,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
       <div className="pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-bold text-muted">{categoryLabels[product.category]}</p>
+            <p className="text-xs font-bold text-muted">{formatCategory(product.category)}</p>
             <h3 className="mt-1 truncate text-base font-bold text-ink">
               <Link href={`/product/${product.slug}`} className="hover:text-cobalt">
                 {product.name}

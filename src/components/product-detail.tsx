@@ -15,7 +15,7 @@ import {
 import { useStore } from "./app-provider";
 import { ProductCard } from "./product-card";
 import { ProductImage } from "./product-image";
-import { categoryLabels, formatPrice } from "@/lib/utils";
+import { formatCategory, formatPrice } from "@/lib/utils";
 
 export function ProductDetail({ slug }: { slug: string }) {
   const { products, reviews, hydrated, addToCart, toggleWishlist, wishlist } = useStore();
@@ -102,7 +102,7 @@ export function ProductDetail({ slug }: { slug: string }) {
           </div>
 
           <div className="lg:pt-6">
-            <p className="text-sm font-bold text-cobalt">{categoryLabels[product.category]}</p>
+            <p className="text-sm font-bold text-cobalt">{formatCategory(product.category)}</p>
             <h1 className="display-type mt-3 max-w-[11ch] text-6xl leading-[0.9] text-ink sm:text-7xl">
               {product.name.toUpperCase()}
             </h1>
@@ -232,7 +232,7 @@ export function ProductDetail({ slug }: { slug: string }) {
 
       {related.length ? (
         <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="display-type text-5xl text-ink">MORE IN {categoryLabels[product.category].toUpperCase()}.</h2>
+          <h2 className="display-type text-5xl text-ink">MORE IN {formatCategory(product.category).toUpperCase()}.</h2>
           <div className="mt-8 grid grid-cols-2 gap-3 lg:max-w-[700px] lg:gap-5">
             {related.map((item) => <ProductCard key={item.id} product={item} />)}
           </div>

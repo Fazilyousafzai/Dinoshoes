@@ -6,7 +6,7 @@ import { CaretDown, MagnifyingGlass, SlidersHorizontal, X } from "@phosphor-icon
 import { useStore } from "./app-provider";
 import { ProductCard } from "./product-card";
 import type { Category } from "@/lib/types";
-import { categoryLabels } from "@/lib/utils";
+import { formatCategory } from "@/lib/utils";
 
 type Sort = "newest" | "price-low" | "price-high" | "name";
 
@@ -16,7 +16,7 @@ export function ShopBrowser() {
   const { products, hydrated } = useStore();
   const initialCategory = params.get("category") as Category | null;
   const [category, setCategory] = useState<Category | "all">(
-    initialCategory && initialCategory in categoryLabels ? initialCategory : "all",
+    initialCategory && products.some((p) => p.category === initialCategory) ? initialCategory : "all",
   );
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("newest");
@@ -117,16 +117,16 @@ export function ShopBrowser() {
         >
           All gear
         </button>
-        {(Object.keys(categoryLabels) as Category[]).map((key) => (
+        {Array.from(new Set(products.map(p => p.category))).map((key) => (
           <button
             key={key}
             type="button"
-            onClick={() => setCategory(key)}
             className={`button-press min-h-11 shrink-0 border px-4 text-sm font-bold ${
               category === key ? "border-ink bg-ink text-paper" : "border-line bg-surface text-ink hover:border-ink"
             }`}
+            onClick={() => setCategory(key)}
           >
-            {categoryLabels[key]}
+            {formatCategory(key)}
           </button>
         ))}
       </div>
