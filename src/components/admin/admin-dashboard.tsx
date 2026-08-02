@@ -356,9 +356,8 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
         previews.map((preview) => preview.file),
       );
       onSaved(saved.name);
-    } catch (cause) {
-      console.error("Save failed:", cause);
-      setError(typeof cause === "object" && cause ? JSON.stringify(cause) : String(cause));
+    } catch (cause: any) {
+      setError(cause?.message || (typeof cause === "object" && cause ? JSON.stringify(cause) : String(cause)));
     } finally {
       setSaving(false);
     }
