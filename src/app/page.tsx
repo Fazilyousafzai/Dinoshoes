@@ -10,9 +10,7 @@ export default function HomePage() {
   return (
     <StoreShell>
       <Hero />
-      <Reveal>
-        <CategoryGrid />
-      </Reveal>
+
       <FeaturedProducts />
 
       <Reveal>
