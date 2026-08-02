@@ -142,7 +142,6 @@ export function ReviewsView() {
       </section>
 
       <section className="mx-auto max-w-[1400px] px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
-        <h2 className="display-type text-5xl text-ink sm:text-6xl">APPROVED BY ADMIN.</h2>
         {approvedReviews.length ? (
           <div className="mt-9 columns-1 gap-5 md:columns-2">
             {approvedReviews.map((review) => (

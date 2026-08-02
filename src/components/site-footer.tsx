@@ -1,35 +1,33 @@
 import Link from "next/link";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
+import { FacebookLogo, TiktokLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 
 export function SiteFooter() {
   return (
     <footer className="bg-[#12161c] text-[#f0f2f2]">
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8 lg:py-18">
-        <div>
+      <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-18">
+        <div className="max-w-md">
           <Link href="/" className="display-type text-4xl text-[#f0f2f2]">
             DINO'S COLLECTION
           </Link>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-[#aeb7c2]">
+          <p className="mt-1 text-sm leading-6 text-[#aeb7c2]">
             Football gear built around the moments that decide a match.
           </p>
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-[#f0f2f2]">Shop</h2>
-          <div className="mt-4 grid gap-3 text-sm text-[#aeb7c2]">
-            <Link href="/shop?category=studs" className="hover:text-white">Football Studs</Link>
-            <Link href="/shop?category=grippers" className="hover:text-white">Grippers</Link>
-            <Link href="/shop?category=socks" className="hover:text-white">Socks</Link>
-            <Link href="/shop?category=footballs" className="hover:text-white">Footballs</Link>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-sm font-bold text-[#f0f2f2]">Store</h2>
-          <div className="mt-4 grid gap-3 text-sm text-[#aeb7c2]">
-            <Link href="/reviews" className="hover:text-white">Reviews</Link>
-            <Link href="/cart" className="hover:text-white">Shopping bag</Link>
-            <Link href="/admin" className="inline-flex items-center gap-1 hover:text-white">
-              Admin panel <ArrowUpRight size={15} weight="bold" />
-            </Link>
+          <div className="mt-6">
+            <h3 className="text-sm font-bold text-[#f0f2f2]">Feel free to contact us</h3>
+            <div className="mt-3 flex items-center gap-4 text-[#aeb7c2]">
+              <a href="https://www.facebook.com/sohail.dino" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <span className="sr-only">Facebook</span>
+                <FacebookLogo size={28} weight="fill" />
+              </a>
+              <a href="https://www.tiktok.com/@sohaildino7?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <span className="sr-only">TikTok</span>
+                <TiktokLogo size={28} weight="fill" />
+              </a>
+              <a href="https://wa.me/923319441845" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                <span className="sr-only">WhatsApp</span>
+                <WhatsappLogo size={28} weight="fill" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
