@@ -12,7 +12,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { demoProducts, demoReviews } from "@/lib/demo-data";
+import { demoProducts, demoReviews, demoCategories } from "@/lib/demo-data";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type {
   CartLine,
@@ -21,6 +21,8 @@ import type {
   ProductDraft,
   Review,
   ReviewStatus,
+  CategoryItem,
+  CategoryDraft,
 } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 
@@ -38,6 +40,7 @@ type CartNotice = {
 
 type StoreContextValue = {
   products: Product[];
+  categories: CategoryItem[];
   reviews: Review[];
   approvedReviews: Review[];
   cart: CartLine[];
@@ -55,6 +58,8 @@ type StoreContextValue = {
   submitReview: (review: NewReview) => Promise<void>;
   saveProduct: (draft: ProductDraft, files: File[]) => Promise<Product>;
   removeProduct: (productId: string) => Promise<void>;
+  saveCategory: (draft: CategoryDraft, file: File) => Promise<CategoryItem>;
+  removeCategory: (categoryId: string) => Promise<void>;
   moderateReview: (reviewId: string, status: ReviewStatus) => Promise<void>;
   placeOrder: (input: OrderInput) => Promise<string>;
   resetDemoData: () => void;
@@ -121,6 +126,25 @@ function toProductRow(product: Product) {
   };
 }
 
+function fromCategoryRow(row: Record<string, unknown>): CategoryItem {
+  return {
+    id: String(row.id),
+    name: String(row.name),
+    slug: String(row.slug),
+    image: String(row.image),
+    createdAt: String(row.created_at),
+  };
+}
+
+function toCategoryRow(category: CategoryItem) {
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    image: category.image,
+  };
+}
+
 function fileToDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -142,6 +166,7 @@ function loadLocal<T>(key: string, fallback: T): T {
 export function AppProvider({ children }: { children: ReactNode }) {
   const supabase = useMemo(() => createClient(), []);
   const [products, setProducts] = useState<Product[]>(demoProducts);
+  const [categories, setCategories] = useState<CategoryItem[]>(demoCategories);
   const [reviews, setReviews] = useState<Review[]>(demoReviews);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -170,17 +195,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setHydrated(true);
 
       if (!supabase) return;
-      const [productResult, reviewResult] = await Promise.all([
+      const [productResult, reviewResult, categoryResult] = await Promise.all([
         supabase.from("products").select("*").order("created_at", { ascending: false }),
         supabase.from("reviews").select("*").order("created_at", { ascending: false }),
+        supabase.from("categories").select("*").order("name", { ascending: true }),
       ]);
 
       if (cancelled) return;
 
-      if (productResult.error || reviewResult.error) {
+      if (productResult.error || reviewResult.error || categoryResult.error) {
         setSyncError(
           productResult.error?.message ??
             reviewResult.error?.message ??
+            categoryResult.error?.message ??
             "Supabase sync failed. Demo data remains available.",
         );
         return;
@@ -188,6 +215,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       setProducts((productResult.data ?? []).map((row) => fromProductRow(row)));
       setReviews((reviewResult.data ?? []).map((row) => fromReviewRow(row)));
+      setCategories((categoryResult.data ?? []).map((row) => fromCategoryRow(row)));
       setSyncError(null);
     }
 
@@ -353,6 +381,61 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [supabase],
   );
 
+  const saveCategory = useCallback(
+    async (draft: CategoryDraft, file: File) => {
+      const id = draft.id ?? crypto.randomUUID();
+      let imageUrl = draft.image ?? "";
+
+      if (file) {
+        if (supabase) {
+          const safeName = file.name.toLowerCase().replace(/[^a-z0-9.-]+/g, "-");
+          const path = `${id}/${crypto.randomUUID()}-${safeName}`;
+          const { error } = await supabase.storage
+            .from("product-media")
+            .upload(path, file, { cacheControl: "3600", upsert: false });
+          if (error) throw error;
+          const { data } = supabase.storage.from("product-media").getPublicUrl(path);
+          imageUrl = data.publicUrl;
+        } else {
+          imageUrl = await fileToDataUrl(file);
+        }
+      }
+
+      const category: CategoryItem = {
+        ...draft,
+        id,
+        slug: draft.slug || slugify(draft.name),
+        image: imageUrl,
+        createdAt: draft.createdAt ?? new Date().toISOString(),
+      };
+
+      if (supabase) {
+        const { error } = await supabase.from("categories").upsert(toCategoryRow(category));
+        if (error) throw error;
+      }
+
+      setCategories((current) => {
+        const exists = current.some((item) => item.id === category.id);
+        return exists
+          ? current.map((item) => (item.id === category.id ? category : item))
+          : [category, ...current];
+      });
+      return category;
+    },
+    [supabase],
+  );
+
+  const removeCategory = useCallback(
+    async (categoryId: string) => {
+      if (supabase) {
+        const { error } = await supabase.from("categories").delete().eq("id", categoryId);
+        if (error) throw error;
+      }
+      setCategories((current) => current.filter((cat) => cat.id !== categoryId));
+    },
+    [supabase],
+  );
+
   const moderateReview = useCallback(
     async (reviewId: string, status: ReviewStatus) => {
       if (supabase) {
@@ -403,6 +486,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo<StoreContextValue>(
     () => ({
       products,
+      categories,
       reviews,
       approvedReviews: reviews.filter((review) => review.status === "approved"),
       cart,
@@ -420,6 +504,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       submitReview,
       saveProduct,
       removeProduct,
+      saveCategory,
+      removeCategory,
       moderateReview,
       placeOrder,
       resetDemoData,
@@ -427,6 +513,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [
       addToCart,
       cart,
+      categories,
       clearCart,
       hydrated,
       moderateReview,
@@ -436,6 +523,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       removeProduct,
       resetDemoData,
       reviews,
+      saveCategory,
+      removeCategory,
       saveProduct,
       setCartQuantity,
       submitReview,

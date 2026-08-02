@@ -1,4 +1,4 @@
-import { CategoryGrid } from "@/components/home/category-grid";
+import { DynamicCategories } from "@/components/home/dynamic-categories";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import { Hero } from "@/components/home/hero";
 
@@ -10,7 +10,9 @@ export default function HomePage() {
   return (
     <StoreShell>
       <Hero />
-
+      <Reveal>
+        <DynamicCategories />
+      </Reveal>
       <FeaturedProducts />
 
       <Reveal>

@@ -22,16 +22,17 @@ import {
   XCircle,
 } from "@phosphor-icons/react";
 import { createClient } from "@/lib/supabase/client";
-import type { Category, Product, ProductDraft, ReviewStatus } from "@/lib/types";
+import type { CategoryItem, CategoryDraft, Product, ProductDraft, ReviewStatus } from "@/lib/types";
 import { formatCategory, formatPrice, slugify } from "@/lib/utils";
 import { useStore } from "../app-provider";
 import { ProductImage } from "../product-image";
 
-type Tab = "overview" | "products" | "reviews" | "settings";
+type Tab = "overview" | "products" | "categories" | "reviews" | "settings";
 
 const tabs: { id: Tab; label: string; icon: typeof Storefront }[] = [
   { id: "overview", label: "Overview", icon: Storefront },
   { id: "products", label: "Products", icon: Package },
+  { id: "categories", label: "Categories", icon: Images },
   { id: "reviews", label: "Reviews", icon: Star },
   { id: "settings", label: "Setup", icon: GearSix },
 ];
@@ -40,6 +41,7 @@ export function AdminDashboard() {
   const store = useStore();
   const [tab, setTab] = useState<Tab>("overview");
   const [editing, setEditing] = useState<Product | "new" | null>(null);
+  const [editingCategory, setEditingCategory] = useState<CategoryItem | "new" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -58,8 +60,25 @@ export function AdminDashboard() {
       await store.removeProduct(product.id);
       setNotice(`${product.name} was archived.`);
       setConfirmDelete(null);
-    } catch (cause) {
-      setNotice(cause instanceof Error ? cause.message : "The product could not be archived.");
+    } catch {
+      setNotice("Could not archive product.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleDeleteCategory(category: CategoryItem) {
+    if (confirmDelete !== category.id) {
+      setConfirmDelete(category.id);
+      return;
+    }
+    setBusyId(category.id);
+    try {
+      await store.removeCategory(category.id);
+      setNotice(`${category.name} was deleted.`);
+      setConfirmDelete(null);
+    } catch {
+      setNotice("Could not delete category.");
     } finally {
       setBusyId(null);
     }
@@ -226,6 +245,71 @@ export function AdminDashboard() {
             </div>
           ) : null}
 
+          {tab === "categories" ? (
+            <div>
+              {editingCategory ? (
+                <CategoryForm
+                  category={editingCategory === "new" ? undefined : editingCategory}
+                  onClose={() => setEditingCategory(null)}
+                  onSaved={(name) => {
+                    setEditingCategory(null);
+                    setNotice(`${name} was saved.`);
+                  }}
+                />
+              ) : null}
+
+              <div className="mt-6 overflow-hidden border border-line bg-surface">
+                <div className="flex items-center justify-between gap-4 border-b border-line px-4 py-4 sm:px-5">
+                  <div>
+                    <h2 className="font-extrabold text-ink">Categories</h2>
+                    <p className="mt-1 text-xs text-muted">{store.categories.length} categories</p>
+                  </div>
+                  <button type="button" onClick={() => setEditingCategory("new")} className="button-press flex min-h-11 items-center gap-2 bg-action px-4 text-xs font-extrabold text-[#f7f7f4] hover:bg-action-hover">
+                    <Plus size={18} weight="bold" /> Add category
+                  </button>
+                </div>
+
+                {store.categories.length ? (
+                  <div className="divide-y divide-line">
+                    {store.categories.map((category) => (
+                      <article key={category.id} className="grid grid-cols-[76px_1fr] gap-4 p-4 sm:grid-cols-[76px_1fr_auto] sm:items-center sm:px-5">
+                        <div className="relative aspect-square overflow-hidden bg-paper-strong">
+                          <ProductImage src={category.image} alt="" sizes="76px" className="h-full w-full object-cover" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="truncate text-sm font-extrabold text-ink">{category.name}</h3>
+                          <p className="mt-1 text-xs text-muted">/{category.slug}</p>
+                        </div>
+                        <div className="col-span-2 flex gap-2 sm:col-span-1">
+                          <button type="button" onClick={() => setEditingCategory(category)} className="button-press flex min-h-11 flex-1 items-center justify-center gap-2 border border-line px-3 text-xs font-bold text-ink hover:border-ink sm:flex-none">
+                            <PencilSimple size={17} weight="bold" /> Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCategory(category)}
+                            disabled={busyId === category.id}
+                            className={`button-press flex min-h-11 flex-1 items-center justify-center gap-2 border px-3 text-xs font-bold sm:flex-none ${
+                              confirmDelete === category.id ? "border-danger bg-danger text-[#f7f7f4]" : "border-line text-danger hover:border-danger"
+                            }`}
+                          >
+                            <Trash size={17} weight="bold" />
+                            {busyId === category.id ? "Deleting" : confirmDelete === category.id ? "Confirm" : "Delete"}
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 text-center">
+                    <Images size={40} weight="duotone" className="mx-auto text-muted" />
+                    <h3 className="mt-4 font-extrabold text-ink">No categories.</h3>
+                    <p className="mt-2 text-sm text-muted">Add categories to organize your products.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
+
           {tab === "reviews" ? (
             <ReviewsAdmin reviews={store.reviews} busyId={busyId} onModerate={handleModeration} />
           ) : null}
@@ -378,25 +462,13 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <AdminField label="Product name"><input required value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" maxLength={120} /></AdminField>
         <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from product name" maxLength={140} /></AdminField>
-        <AdminField label="Category" helper="Select or type a new category.">
-          <input list="category-options" required value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input" placeholder="e.g. studs" />
-          <datalist id="category-options">
-            {existingCategories.map((cat) => <option key={cat} value={cat} />)}
-          </datalist>
-          {existingCategories.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {existingCategories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setDraft({ ...draft, category: cat })}
-                  className="rounded bg-surface px-2 py-1 text-xs font-bold text-muted transition-colors hover:bg-line hover:text-ink"
-                >
-                  {formatCategory(cat)}
-                </button>
-              ))}
-            </div>
-          )}
+        <AdminField label="Category" helper="Select a category for this product.">
+          <select required value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input">
+            <option value="" disabled>Select category...</option>
+            {store.categories.map((cat) => (
+              <option key={cat.id} value={cat.slug}>{cat.name}</option>
+            ))}
+          </select>
         </AdminField>
         <AdminField label="Sizes" helper="Separate options with commas."><input required value={sizeInput} onChange={(event) => setSizeInput(event.target.value)} className="field-input" placeholder="6, 7, 8, 9" /></AdminField>
         <AdminField label="Price"><input required type="number" min="0" step="0.01" value={draft.price} onChange={(event) => setDraft({ ...draft, price: Number(event.target.value) })} className="field-input" /></AdminField>
@@ -449,6 +521,93 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
         <button type="button" onClick={onClose} className="button-press min-h-12 border border-line px-5 text-sm font-extrabold text-ink hover:border-ink">Cancel</button>
         <button type="submit" disabled={saving} className="button-press flex min-h-12 items-center justify-center gap-2 bg-action px-5 text-sm font-extrabold text-[#f7f7f4] hover:bg-action-hover">
           <UploadSimple size={19} weight="bold" /> {saving ? "Saving and uploading..." : "Save product"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function CategoryForm({ category, onClose, onSaved }: { category?: CategoryItem; onClose: () => void; onSaved: (name: string) => void }) {
+  const store = useStore();
+  const [draft, setDraft] = useState<CategoryDraft>(category ?? { name: "", slug: "" });
+  const [preview, setPreview] = useState<{ file: File; url: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview.url);
+  }, [preview]);
+
+  function handleFile(file: File | null) {
+    if (!file) return;
+    setPreview({ file, url: URL.createObjectURL(file) });
+  }
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!category?.image && !preview) {
+      setError("Please add a category image.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      const saved = await store.saveCategory(
+        { ...draft, slug: draft.slug || slugify(draft.name) },
+        preview?.file as File
+      );
+      onSaved(saved.name);
+    } catch (cause: any) {
+      setError(cause?.message || (typeof cause === "object" && cause ? JSON.stringify(cause) : String(cause)));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="border-t-4 border-cobalt bg-surface p-5 shadow-court sm:p-7">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-extrabold text-ink">{category ? "Edit category" : "Add category"}</h2>
+          <p className="mt-1 text-sm text-muted">Categories organize your products on the homepage and catalog.</p>
+        </div>
+        <button type="button" onClick={onClose} className="rounded-full p-2 text-muted transition hover:bg-line hover:text-ink">
+          <X size={20} weight="bold" />
+        </button>
+      </div>
+
+      <div className="mt-6 flex flex-col items-start gap-5 sm:flex-row">
+        <label className="group relative block aspect-square w-32 shrink-0 cursor-pointer overflow-hidden border border-dashed border-line bg-paper-strong transition hover:border-cobalt sm:w-40">
+          <input type="file" accept="image/png, image/jpeg, image/webp" className="sr-only" onChange={(e) => handleFile(e.target.files?.[0] || null)} />
+          {preview?.url || category?.image ? (
+            <ProductImage src={preview?.url ?? category!.image} alt="" sizes="160px" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center p-4 text-center text-muted group-hover:text-cobalt">
+              <Images size={24} weight="duotone" />
+              <span className="mt-2 text-xs font-bold">Add image</span>
+            </div>
+          )}
+        </label>
+
+        <div className="grid w-full gap-5">
+          <AdminField label="Category name"><input required value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" maxLength={40} /></AdminField>
+          <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from category name" maxLength={60} /></AdminField>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="mt-6 border border-danger/20 bg-danger/10 p-4 text-sm font-semibold text-danger">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="mt-6 flex items-center justify-end gap-3 border-t border-line pt-6">
+        <button type="button" onClick={onClose} disabled={saving} className="button-press min-h-11 px-4 text-sm font-bold text-ink hover:text-ink">
+          Cancel
+        </button>
+        <button type="submit" disabled={saving} className="button-press flex min-h-11 items-center gap-2 bg-action px-5 text-sm font-extrabold text-[#f7f7f4] hover:bg-action-hover disabled:opacity-50">
+          <UploadSimple size={18} weight="bold" className={saving ? "animate-bounce" : ""} />
+          {saving ? "Saving..." : "Save category"}
         </button>
       </div>
     </form>

@@ -1,5 +1,28 @@
-import type { Product, Review } from "./types";
+import type { Product, Review, CategoryItem } from "./types";
 
+export const demoCategories: CategoryItem[] = [
+  {
+    id: "demo-cat-studs",
+    name: "Studs",
+    slug: "studs",
+    image: "/images/category-studs.png",
+    createdAt: "2026-07-24T10:00:00.000Z",
+  },
+  {
+    id: "demo-cat-grippers",
+    name: "Grippers",
+    slug: "grippers",
+    image: "/images/category-grippers.png",
+    createdAt: "2026-07-24T10:00:00.000Z",
+  },
+  {
+    id: "demo-cat-socks",
+    name: "Socks",
+    slug: "socks",
+    image: "/images/category-socks.png",
+    createdAt: "2026-07-24T10:00:00.000Z",
+  },
+];
 export const demoProducts: Product[] = [
   {
     id: "demo-studs-velocity",

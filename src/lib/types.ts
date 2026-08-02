@@ -1,5 +1,18 @@
 export type Category = string;
 
+export type CategoryItem = {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  createdAt: string;
+};
+
+export type CategoryDraft = Omit<CategoryItem, "id" | "createdAt" | "image"> & {
+  id?: string;
+  createdAt?: string;
+  image?: string;
+};
 export type Product = {
   id: string;
   slug: string;
