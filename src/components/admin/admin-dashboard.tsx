@@ -383,6 +383,20 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
           <datalist id="category-options">
             {existingCategories.map((cat) => <option key={cat} value={cat} />)}
           </datalist>
+          {existingCategories.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {existingCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setDraft({ ...draft, category: cat })}
+                  className="rounded bg-surface px-2 py-1 text-xs font-bold text-muted transition-colors hover:bg-line hover:text-ink"
+                >
+                  {formatCategory(cat)}
+                </button>
+              ))}
+            </div>
+          )}
         </AdminField>
         <AdminField label="Sizes" helper="Separate options with commas."><input required value={sizeInput} onChange={(event) => setSizeInput(event.target.value)} className="field-input" placeholder="6, 7, 8, 9" /></AdminField>
         <AdminField label="Price"><input required type="number" min="0" step="0.01" value={draft.price} onChange={(event) => setDraft({ ...draft, price: Number(event.target.value) })} className="field-input" /></AdminField>
