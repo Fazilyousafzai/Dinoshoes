@@ -1,9 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowUpRight } from "@phosphor-icons/react";
 import { useStore } from "@/components/app-provider";
-import { ProductImage } from "@/components/product-image";
 
 export function DynamicCategories() {
   const { categories } = useStore();
@@ -12,51 +12,59 @@ export function DynamicCategories() {
     return null;
   }
 
-  return (
-    <section className="border-t border-line bg-[#0d1117] py-18 lg:py-24">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="display-type text-5xl uppercase text-ink sm:text-6xl">
-              Explore Categories.
-            </h2>
-          </div>
-          <Link
-            href="/shop"
-            className="group mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-cobalt hover:text-cobalt-light sm:mt-0"
-          >
-            Shop all <ArrowRight size={18} weight="bold" className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
+  const getBentoClass = (index: number) => {
+    switch (index) {
+      case 0:
+        return "md:col-span-6 md:row-span-2";
+      case 1:
+        return "md:col-span-3";
+      case 2:
+        return "md:col-span-3";
+      case 3:
+        return "md:col-span-6";
+      default:
+        return "md:col-span-3";
+    }
+  };
 
-        <div className="scroll-area hide-scrollbar mt-10 -mx-4 overflow-x-auto px-4 pb-8 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="flex w-max gap-5">
-            {categories.map((category) => (
-              <div key={category.id} className="w-[280px] shrink-0 sm:w-[320px] md:w-[360px]">
-                <Link
-                  href={`/shop?category=${category.slug}`}
-                  className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden bg-surface p-6 shadow-court outline-none ring-cobalt transition hover:shadow-hover focus-visible:ring-2"
-                >
-                  <div className="absolute inset-0 z-0">
-                    <ProductImage
-                      src={category.image}
-                      alt={category.name}
-                      sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, 360px"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/90 via-[#0d1117]/20 to-transparent" />
-                  </div>
-                  <div className="relative z-10 flex items-center justify-between border-t border-white/20 pt-4">
-                    <h3 className="text-xl font-extrabold text-[#f3f4f2]">{category.name}</h3>
-                    <div className="flex size-10 items-center justify-center bg-white/10 text-white backdrop-blur-md transition-colors group-hover:bg-cobalt">
-                      <ArrowRight size={20} weight="bold" />
-                    </div>
-                  </div>
-                </Link>
+  return (
+    <section className="mx-auto max-w-[1400px] px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
+      <h2 className="display-type max-w-[12ch] text-5xl leading-[0.92] text-ink sm:text-6xl uppercase">
+        START WITH YOUR POSITION.
+      </h2>
+      <p className="mt-4 max-w-xl text-base leading-7 text-ink-soft">
+        Browse the essentials separately, or bring them together in the kit builder.
+      </p>
+
+      <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 md:mx-0 md:grid md:grid-cols-12 md:grid-rows-2 md:overflow-visible lg:gap-5">
+        {categories.map((category, index) => (
+          <article
+            key={category.id}
+            className={`w-[82vw] max-w-[360px] shrink-0 snap-start md:w-auto md:max-w-none ${getBentoClass(
+              index,
+            )}`}
+          >
+            <Link href={`/shop?category=${category.slug}`} className="group flex h-full flex-col bg-surface">
+              <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:min-h-[250px] md:flex-1 md:aspect-auto">
+                <Image
+                  src={category.image}
+                  alt={category.name}
+                  fill
+                  sizes="(max-width: 767px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                />
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="grid min-h-[106px] grid-cols-[minmax(0,1fr)_44px] items-center gap-4 border border-t-0 border-line px-4 py-4 sm:px-5">
+                <div className="min-w-0">
+                  <h3 className="text-lg font-extrabold text-ink">{category.name}</h3>
+                </div>
+                <span className="flex size-11 shrink-0 items-center justify-center bg-ink text-paper transition-colors group-hover:bg-cobalt">
+                  <ArrowUpRight size={20} weight="bold" />
+                </span>
+              </div>
+            </Link>
+          </article>
+        ))}
       </div>
     </section>
   );
