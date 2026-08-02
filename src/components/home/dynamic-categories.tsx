@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { useStore } from "@/components/app-provider";
+import { ProductImage } from "@/components/product-image";
 
 export function DynamicCategories() {
   const { categories } = useStore();
@@ -46,12 +46,11 @@ export function DynamicCategories() {
           >
             <Link href={`/shop?category=${category.slug}`} className="group flex h-full flex-col bg-surface">
               <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:min-h-[250px] md:flex-1 md:aspect-auto">
-                <Image
+                <ProductImage
                   src={category.image}
                   alt={category.name}
-                  fill
                   sizes="(max-width: 767px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
                 />
               </div>
               <div className="grid min-h-[106px] grid-cols-[minmax(0,1fr)_44px] items-center gap-4 border border-t-0 border-line px-4 py-4 sm:px-5">
