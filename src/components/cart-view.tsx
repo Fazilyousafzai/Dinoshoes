@@ -104,7 +104,7 @@ export function CartView() {
             Continue to details <ArrowRight size={19} weight="bold" />
           </Link>
           <p className="mt-4 text-xs leading-5 text-muted">
-            Demo checkout creates a pending order. Connect a payment provider and final shipping rules before launch.
+            Checkout process securely registers your order and connects you to our team.
           </p>
         </aside>
       </div>

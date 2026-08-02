@@ -51,7 +51,7 @@ export function ShopBrowser() {
         <p className="mt-5 max-w-xl text-base leading-7 text-ink-soft">
           Search the catalog, narrow by category, and check stock before adding your size.
         </p>
-        <p className="mt-2 text-xs font-bold text-warning">Demo catalog and prices for presentation only.</p>
+
       </div>
 
       <div className="mt-10 grid gap-4 border-y border-line py-5 md:grid-cols-[1fr_auto]">

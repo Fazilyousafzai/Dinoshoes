@@ -116,7 +116,7 @@ export function ProductDetail({ slug }: { slug: string }) {
                 <span className="text-sm font-bold text-ink">{productReviews.length ? "Verified reviews" : "New product"}</span>
               </div>
             </div>
-            <p className="mt-2 text-xs font-bold text-warning">Demo product and price for presentation only.</p>
+
             <p className="mt-6 max-w-xl text-base leading-7 text-ink-soft">{product.description}</p>
 
             <div className="mt-8">

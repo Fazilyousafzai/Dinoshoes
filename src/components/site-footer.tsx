@@ -10,7 +10,7 @@ export function SiteFooter() {
             DINO'S COLLECTION
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#aeb7c2]">
-            Football gear built around the moments that decide a match. Demo catalog content should be replaced before launch.
+            Football gear built around the moments that decide a match.
           </p>
         </div>
         <div>
@@ -34,7 +34,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 px-4 py-5 text-center text-xs text-[#8d98a5]">
-        <p>Demo storefront. Add final policies, contact details, currency, and payment setup before production.</p>
+        <p>&copy; {new Date().getFullYear()} DINO'S COLLECTION. All rights reserved.</p>
       </div>
     </footer>
   );

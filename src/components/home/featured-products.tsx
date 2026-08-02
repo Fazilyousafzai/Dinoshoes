@@ -18,7 +18,7 @@ export function FeaturedProducts() {
             <p className="mt-4 max-w-lg text-base leading-7 text-ink-soft">
               Fresh additions across the pitch, selected for a complete match-day setup.
             </p>
-            <p className="mt-2 text-xs font-bold text-warning">Demo catalog and prices for presentation only.</p>
+
           </div>
           <Link
             href="/shop"
