@@ -357,7 +357,8 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       );
       onSaved(saved.name);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "The product could not be saved.");
+      console.error("Save failed:", cause);
+      setError(typeof cause === "object" && cause ? JSON.stringify(cause) : String(cause));
     } finally {
       setSaving(false);
     }
