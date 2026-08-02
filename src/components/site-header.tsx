@@ -38,9 +38,9 @@ export function SiteHeader() {
         <Link
           href="/"
           className="display-type mr-auto text-[1.7rem] leading-none tracking-[-0.02em] text-[#f3f4f2]"
-          aria-label="HALFSPACE home"
+          aria-label="DINO'S COLLECTION home"
         >
-          HALFSPACE
+          DINO'S COLLECTION
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">

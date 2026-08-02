@@ -26,7 +26,7 @@ export function ReviewsView() {
       const product = products.find((item) => item.id === productId);
       await submitReview({
         productId: product?.id,
-        productName: product?.name ?? "HALFSPACE store",
+        productName: product?.name ?? "DINO'S COLLECTION store",
         author,
         email,
         rating,

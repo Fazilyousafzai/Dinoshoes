@@ -87,7 +87,7 @@ export function AdminDashboard() {
     <div className="min-h-[100dvh] bg-paper text-ink lg:grid lg:grid-cols-[240px_1fr]">
       <aside className="border-b border-line bg-[#12161c] text-[#f2f4f5] lg:sticky lg:top-0 lg:h-[100dvh] lg:border-b-0 lg:border-r lg:border-white/10">
         <div className="flex h-[68px] items-center justify-between px-4 lg:px-5">
-          <Link href="/" className="display-type text-2xl text-[#f2f4f5]">HALFSPACE</Link>
+          <Link href="/" className="display-type text-2xl text-[#f2f4f5]">DINO'S COLLECTION</Link>
           <Link href="/" className="flex size-11 items-center justify-center border border-white/15 lg:hidden" aria-label="View store">
             <Eye size={21} weight="bold" />
           </Link>

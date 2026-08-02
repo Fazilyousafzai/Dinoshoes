@@ -14,14 +14,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 export const metadata: Metadata = {
   metadataBase: new URL("https://halfspace-football.vercel.app"),
   title: {
-    default: "HALFSPACE | Football gear for the next touch",
-    template: "%s | HALFSPACE",
+    default: "DINO'S COLLECTION | Football gear for the next touch",
+    template: "%s | DINO'S COLLECTION",
   },
   description:
     "Shop football studs, grippers, socks, and footballs in a fast mobile-first football store.",
   keywords: ["football shoes", "football studs", "grip socks", "footballs", "football gear"],
   openGraph: {
-    title: "HALFSPACE Football Store",
+    title: "DINO'S COLLECTION Football Store",
     description: "Own the next touch with match-ready football gear.",
     images: [{ url: "/images/hero-boot.png", width: 1536, height: 1024 }],
   },

@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = demoProducts.find((item) => item.slug === slug);
   return {
     title: product?.name ?? "Product",
-    description: product?.description ?? "View football gear from HALFSPACE.",
+    description: product?.description ?? "View football gear from DINO'S COLLECTION.",
   };
 }
 

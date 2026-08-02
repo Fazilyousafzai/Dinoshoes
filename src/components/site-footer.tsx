@@ -7,7 +7,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8 lg:py-18">
         <div>
           <Link href="/" className="display-type text-4xl text-[#f0f2f2]">
-            HALFSPACE
+            DINO'S COLLECTION
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-[#aeb7c2]">
             Football gear built around the moments that decide a match. Demo catalog content should be replaced before launch.
