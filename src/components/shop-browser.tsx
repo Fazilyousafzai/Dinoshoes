@@ -19,7 +19,21 @@ export function ShopBrowser() {
     initialCategory && products.some((p) => p.category === initialCategory) ? initialCategory : "all",
   );
   const [query, setQuery] = useState("");
+  const [sizeFilter, setSizeFilter] = useState<string>("all");
   const [sort, setSort] = useState<Sort>("newest");
+
+  const allSizes = useMemo(() => {
+    const sizes = new Set<string>();
+    products.forEach((p) => {
+      if (p.active) p.sizes.forEach((s) => sizes.add(s));
+    });
+    return Array.from(sizes).sort((a, b) => {
+      const numA = parseFloat(a);
+      const numB = parseFloat(b);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      return a.localeCompare(b);
+    });
+  }, [products]);
 
   useEffect(() => {
     if (params.get("focus") === "search") searchRef.current?.focus();
@@ -31,6 +45,7 @@ export function ShopBrowser() {
       (product) =>
         product.active &&
         (category === "all" || product.category === category) &&
+        (sizeFilter === "all" || product.sizes.includes(sizeFilter)) &&
         (!normalized ||
           product.name.toLowerCase().includes(normalized) ||
           product.description.toLowerCase().includes(normalized)),
@@ -42,7 +57,7 @@ export function ShopBrowser() {
       if (sort === "name") return a.name.localeCompare(b.name);
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-  }, [category, products, query, sort]);
+  }, [category, products, query, sort, sizeFilter]);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
@@ -54,7 +69,7 @@ export function ShopBrowser() {
 
       </div>
 
-      <div className="mt-10 grid gap-4 border-y border-line py-5 md:grid-cols-[1fr_auto]">
+      <div className="mt-10 grid gap-4 border-y border-line py-5 md:grid-cols-[1fr_auto_auto]">
         <label className="relative block">
           <span className="sr-only">Search products</span>
           <MagnifyingGlass
@@ -80,6 +95,27 @@ export function ShopBrowser() {
               <X size={18} weight="bold" />
             </button>
           ) : null}
+        </label>
+        <label className="relative flex min-w-[140px] items-center">
+          <span className="sr-only">Filter by size</span>
+          <select
+            value={sizeFilter}
+            onChange={(event) => setSizeFilter(event.target.value)}
+            className="field-input field-input-trailing cursor-pointer appearance-none pl-4"
+          >
+            <option value="all">All sizes</option>
+            {allSizes.map((size) => (
+              <option key={size} value={size}>
+                Size {size}
+              </option>
+            ))}
+          </select>
+          <CaretDown
+            size={17}
+            weight="bold"
+            className="pointer-events-none absolute right-4 text-muted"
+            aria-hidden="true"
+          />
         </label>
         <label className="relative flex min-w-[220px] items-center">
           <SlidersHorizontal
@@ -135,15 +171,17 @@ export function ShopBrowser() {
         <p className="text-sm font-bold text-ink">
           {hydrated ? `${visible.length} ${visible.length === 1 ? "product" : "products"}` : "Loading catalog"}
         </p>
-        {(category !== "all" || query) && (
+        {(category !== "all" || query || sizeFilter !== "all") && (
           <button
             type="button"
             onClick={() => {
               setCategory("all");
               setQuery("");
+              setSizeFilter("all");
             }}
-            className="text-sm font-bold text-cobalt underline underline-offset-4"
+            className="button-press inline-flex h-9 items-center gap-1.5 border border-line px-3 text-xs font-bold text-ink hover:border-ink"
           >
+            <X size={13} weight="bold" />
             Clear filters
           </button>
         )}
