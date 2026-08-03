@@ -5,7 +5,8 @@ export function SiteFooter() {
   return (
     <footer className="bg-[#12161c] text-[#f0f2f2]">
       <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-18">
-        <div className="max-w-md">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="max-w-md">
           <Link href="/" className="display-type text-4xl text-[#f2f4f5] sm:text-5xl lg:text-7xl">
             DINO FOOTBALL SHOES
           </Link>
@@ -29,6 +30,13 @@ export function SiteFooter() {
               </a>
             </div>
           </div>
+        </div>
+        <div className="max-w-md sm:col-start-2 lg:col-span-2 lg:col-start-2 lg:max-w-lg lg:justify-self-end">
+          <h3 className="text-sm font-bold text-[#f0f2f2]">Return Policy</h3>
+          <p className="mt-3 text-sm leading-6 text-[#aeb7c2]">
+            If the shoes are unused and have quality drawbacks that were not disclosed by the seller at the time of purchase, they can be returned within 7 days. If the shoes have been used, they cannot be returned.
+          </p>
+        </div>
         </div>
       </div>
       <div className="border-t border-white/10 px-4 py-5 text-center text-xs text-[#8d98a5]">
