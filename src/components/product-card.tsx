@@ -11,7 +11,10 @@ import { ProductImage } from "./product-image";
 export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const { addToCart, toggleWishlist, wishlist } = useStore();
   const wished = wishlist.includes(product.id);
-  const defaultSize = product.sizes[0] ?? "One size";
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    product.sizes.length === 1 ? product.sizes[0] : null,
+  );
+  const [promptSize, setPromptSize] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -23,8 +26,15 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   );
 
   function handleAdd() {
-    addToCart(product, defaultSize);
+    if (product.sizes.length > 1 && !selectedSize) {
+      setPromptSize(true);
+      if (addedTimer.current) clearTimeout(addedTimer.current);
+      addedTimer.current = setTimeout(() => setPromptSize(false), 2000);
+      return;
+    }
+    addToCart(product, selectedSize || product.sizes[0] || "One size");
     setAdded(true);
+    setPromptSize(false);
     if (addedTimer.current) clearTimeout(addedTimer.current);
     addedTimer.current = setTimeout(() => setAdded(false), 2400);
   }
@@ -68,6 +78,31 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             <ArrowUpRight size={18} weight="bold" />
           </Link>
         </div>
+
+        {product.sizes.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {product.sizes.map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => {
+                  setSelectedSize(size);
+                  setPromptSize(false);
+                }}
+                className={`button-press flex h-7 min-w-[28px] items-center justify-center border px-1.5 text-[11px] font-bold transition-colors ${
+                  selectedSize === size
+                    ? "border-ink bg-ink text-paper"
+                    : promptSize
+                      ? "border-danger text-danger hover:border-danger"
+                      : "border-line text-ink hover:border-ink"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="mt-3 flex items-center justify-between gap-3">
           <p className="font-extrabold text-ink">
             {formatPrice(product.price)}
@@ -87,7 +122,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             aria-label={added ? `${product.name} added to bag` : `Add ${product.name} to bag`}
           >
             {added ? <CheckCircle size={17} weight="fill" /> : <ShoppingBagOpen size={17} weight="bold" />}
-            {product.stock > 0 ? (added ? "Added" : "Add") : "Sold out"}
+            {product.stock > 0 ? (promptSize ? "Select Size" : added ? "Added" : "Add") : "Sold out"}
           </button>
         </div>
       </div>

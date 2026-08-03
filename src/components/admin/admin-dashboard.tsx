@@ -43,6 +43,7 @@ export function AdminDashboard() {
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [editingCategory, setEditingCategory] = useState<CategoryItem | "new" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [sellingSizeProductId, setSellingSizeProductId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -50,7 +51,13 @@ export function AdminDashboard() {
   const pending = store.reviews.filter((review) => review.status === "pending");
   const lowStock = activeProducts.filter((product) => product.stock > 0 && product.stock <= 10);
 
-  async function handleDelete(product: Product) {
+  async function handleMarkSold(product: Product) {
+    if (product.sizes.length > 1) {
+      setSellingSizeProductId(product.id);
+      setConfirmDelete(null);
+      return;
+    }
+
     if (confirmDelete !== product.id) {
       setConfirmDelete(product.id);
       return;
@@ -58,10 +65,29 @@ export function AdminDashboard() {
     setBusyId(product.id);
     try {
       await store.removeProduct(product.id);
-      setNotice(`${product.name} was archived.`);
+      setNotice(`${product.name} was marked as sold.`);
       setConfirmDelete(null);
     } catch {
-      setNotice("Could not archive product.");
+      setNotice("Could not update product.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleMarkSizeSold(product: Product, sizeSold: string) {
+    setBusyId(product.id);
+    try {
+      const newSizes = product.sizes.filter((s) => s !== sizeSold);
+      if (newSizes.length === 0) {
+        await store.removeProduct(product.id);
+        setNotice(`${product.name} was marked as sold.`);
+      } else {
+        await store.saveProduct({ ...product, sizes: newSizes }, []);
+        setNotice(`Size ${sizeSold} removed from ${product.name}.`);
+      }
+      setSellingSizeProductId(null);
+    } catch {
+      setNotice("Could not update product.");
     } finally {
       setBusyId(null);
     }
@@ -215,21 +241,45 @@ export function AdminDashboard() {
                           <p className="mt-1 text-xs text-muted">{formatCategory(product.category)} | {formatPrice(product.price)}</p>
                           <p className={`mt-2 text-xs font-bold ${product.stock <= 10 ? "text-warning" : "text-success"}`}>{product.stock} in stock</p>
                         </div>
-                        <div className="col-span-2 flex gap-2 sm:col-span-1">
-                          <button type="button" onClick={() => setEditing(product)} className="button-press flex min-h-11 flex-1 items-center justify-center gap-2 border border-line px-3 text-xs font-bold text-ink hover:border-ink sm:flex-none">
-                            <PencilSimple size={17} weight="bold" /> Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(product)}
-                            disabled={busyId === product.id}
-                            className={`button-press flex min-h-11 flex-1 items-center justify-center gap-2 border px-3 text-xs font-bold sm:flex-none ${
-                              confirmDelete === product.id ? "border-danger bg-danger text-[#f7f7f4]" : "border-line text-danger hover:border-danger"
-                            }`}
-                          >
-                            <Trash size={17} weight="bold" />
-                            {busyId === product.id ? "Archiving" : confirmDelete === product.id ? "Confirm" : "Archive"}
-                          </button>
+                        <div className="col-span-2 flex flex-col justify-center gap-2 sm:col-span-1">
+                          {sellingSizeProductId === product.id ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="w-full text-xs font-bold text-ink">Select size sold:</span>
+                              {product.sizes.map((size) => (
+                                <button
+                                  key={size}
+                                  onClick={() => handleMarkSizeSold(product, size)}
+                                  className="button-press border border-line bg-surface px-2 py-1 text-xs font-bold text-ink hover:border-ink"
+                                >
+                                  {size}
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={() => setSellingSizeProductId(null)}
+                                className="button-press px-2 py-1 text-xs font-bold text-muted hover:text-ink"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2">
+                              <button type="button" onClick={() => setEditing(product)} className="button-press flex min-h-11 flex-1 items-center justify-center gap-2 border border-line px-3 text-xs font-bold text-ink hover:border-ink sm:flex-none">
+                                <PencilSimple size={17} weight="bold" /> Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMarkSold(product)}
+                                disabled={busyId === product.id}
+                                className={`button-press flex min-h-11 flex-1 items-center justify-center gap-2 border px-3 text-xs font-bold sm:flex-none ${
+                                  confirmDelete === product.id ? "border-danger bg-danger text-[#f7f7f4]" : "border-line text-danger hover:border-danger"
+                                }`}
+                              >
+                                <Trash size={17} weight="bold" />
+                                {busyId === product.id ? "Updating" : confirmDelete === product.id ? "Confirm" : "Mark as Sold"}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </article>
                     ))}
