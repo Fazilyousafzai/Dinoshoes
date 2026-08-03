@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const product = demoProducts.find((item) => item.slug === slug);
   return {
-    title: product?.name ?? "Product",
-    description: product?.description ?? "View football gear from DINO'S COLLECTION.",
+    title: product?.name ? `${product.name} | DINO FOOTBALL SHOES` : "Not found",
+    description: product?.description ?? "View football gear from DINO FOOTBALL SHOES.",
   };
 }
 

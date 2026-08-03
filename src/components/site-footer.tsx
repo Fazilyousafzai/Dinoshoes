@@ -6,8 +6,8 @@ export function SiteFooter() {
     <footer className="bg-[#12161c] text-[#f0f2f2]">
       <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-18">
         <div className="max-w-md">
-          <Link href="/" className="display-type text-4xl text-[#f0f2f2]">
-            DINO'S COLLECTION
+          <Link href="/" className="display-type text-4xl text-[#f2f4f5] sm:text-5xl lg:text-7xl">
+            DINO FOOTBALL SHOES
           </Link>
           <p className="mt-1 text-sm leading-6 text-[#aeb7c2]">
             Football gear built around the moments that decide a match.
@@ -32,7 +32,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 px-4 py-5 text-center text-xs text-[#8d98a5]">
-        <p>&copy; {new Date().getFullYear()} DINO'S COLLECTION. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} DINO FOOTBALL SHOES. All rights reserved.</p>
       </div>
     </footer>
   );

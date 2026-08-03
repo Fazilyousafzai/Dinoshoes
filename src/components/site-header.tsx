@@ -38,9 +38,9 @@ export function SiteHeader() {
         <Link
           href="/"
           className="display-type mr-auto text-[1.7rem] leading-none tracking-[-0.02em] text-[#f3f4f2]"
-          aria-label="DINO'S COLLECTION home"
+          aria-label="DINO FOOTBALL SHOES home"
         >
-          DINO'S COLLECTION
+          DINO FOOTBALL SHOES
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">

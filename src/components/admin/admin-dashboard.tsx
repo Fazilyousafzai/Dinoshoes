@@ -106,7 +106,7 @@ export function AdminDashboard() {
     <div className="min-h-[100dvh] bg-paper text-ink lg:grid lg:grid-cols-[240px_1fr]">
       <aside className="border-b border-line bg-[#12161c] text-[#f2f4f5] lg:sticky lg:top-0 lg:h-[100dvh] lg:border-b-0 lg:border-r lg:border-white/10">
         <div className="flex h-[68px] items-center justify-between px-4 lg:px-5">
-          <Link href="/" className="display-type text-2xl text-[#f2f4f5]">DINO'S COLLECTION</Link>
+          <Link href="/" className="display-type text-2xl text-[#f2f4f5]">DINO FOOTBALL SHOES</Link>
           <Link href="/" className="flex size-11 items-center justify-center border border-white/15 lg:hidden" aria-label="View store">
             <Eye size={21} weight="bold" />
           </Link>
@@ -400,6 +400,9 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
     active: product?.active ?? true,
   }));
   const [sizeInput, setSizeInput] = useState(product?.sizes.join(", ") ?? "");
+  const [priceInput, setPriceInput] = useState(product ? String(product.price) : "");
+  const [comparePriceInput, setComparePriceInput] = useState(product?.compareAtPrice ? String(product.compareAtPrice) : "");
+  const [stockInput, setStockInput] = useState(product ? String(product.stock) : "");
   const [previews, setPreviews] = useState<PreviewFile[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -436,6 +439,9 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
           ...draft,
           slug: draft.slug || slugify(draft.name),
           sizes: sizeInput.split(",").map((size) => size.trim()).filter(Boolean),
+          price: Number(priceInput),
+          compareAtPrice: comparePriceInput ? Number(comparePriceInput) : undefined,
+          stock: Number(stockInput),
         },
         previews.map((preview) => preview.file),
       );
@@ -452,7 +458,7 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-extrabold text-ink">{product ? "Edit product" : "Add product"}</h2>
-          <p className="mt-1 text-xs text-muted">All fields marked by the browser are required.</p>
+          <p className="mt-1 text-xs text-muted">All fields are optional.</p>
         </div>
         <button type="button" onClick={onClose} className="flex size-11 items-center justify-center border border-line" aria-label="Close product form">
           <X size={19} weight="bold" />
@@ -460,22 +466,22 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       </div>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        <AdminField label="Product name"><input required value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" maxLength={120} /></AdminField>
-        <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from product name" maxLength={140} /></AdminField>
+        <div className="sm:col-span-2">
+          <AdminField label="Product name"><input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" /></AdminField>
+        </div>
         <AdminField label="Category" helper="Select a category for this product.">
-          <select required value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input">
+          <select value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="field-input">
             <option value="" disabled>Select category...</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.slug}>{cat.name}</option>
             ))}
           </select>
         </AdminField>
-        <AdminField label="Sizes" helper="Separate options with commas."><input required value={sizeInput} onChange={(event) => setSizeInput(event.target.value)} className="field-input" placeholder="6, 7, 8, 9" /></AdminField>
-        <AdminField label="Price"><input required type="number" min="0" step="0.01" value={draft.price} onChange={(event) => setDraft({ ...draft, price: Number(event.target.value) })} className="field-input" /></AdminField>
-        <AdminField label="Compare-at price" helper="Optional."><input type="number" min="0" step="0.01" value={draft.compareAtPrice ?? ""} onChange={(event) => setDraft({ ...draft, compareAtPrice: event.target.value ? Number(event.target.value) : undefined })} className="field-input" /></AdminField>
-        <AdminField label="Stock quantity"><input required type="number" min="0" step="1" value={draft.stock} onChange={(event) => setDraft({ ...draft, stock: Number(event.target.value) })} className="field-input" /></AdminField>
-        <AdminField label="Badge" helper="Optional short label shown near product copy."><input value={draft.badge ?? ""} onChange={(event) => setDraft({ ...draft, badge: event.target.value || undefined })} className="field-input" maxLength={40} /></AdminField>
-        <div className="sm:col-span-2"><AdminField label="Description"><textarea required value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} className="field-input min-h-28 resize-y" minLength={20} maxLength={1000} /></AdminField></div>
+        <AdminField label="Sizes" helper="Separate options with commas."><input value={sizeInput} onChange={(event) => setSizeInput(event.target.value)} className="field-input" placeholder="6, 7, 8, 9" /></AdminField>
+        <AdminField label="Price"><input type="text" inputMode="decimal" pattern="[0-9.]*" value={priceInput} onChange={(event) => setPriceInput(event.target.value)} className="field-input" /></AdminField>
+        <AdminField label="Compare-at price" helper="Optional."><input type="text" inputMode="decimal" pattern="[0-9.]*" value={comparePriceInput} onChange={(event) => setComparePriceInput(event.target.value)} className="field-input" /></AdminField>
+        <AdminField label="Stock quantity"><input type="text" inputMode="numeric" pattern="[0-9]*" value={stockInput} onChange={(event) => setStockInput(event.target.value)} className="field-input" /></AdminField>
+        <div className="sm:col-span-2"><AdminField label="Description"><textarea value={draft.description} onChange={(event) => setDraft({ ...draft, description: event.target.value })} className="field-input min-h-28 resize-y" /></AdminField></div>
 
         <fieldset className="sm:col-span-2">
           <legend className="text-sm font-extrabold text-ink">Product images</legend>
@@ -590,8 +596,8 @@ function CategoryForm({ category, onClose, onSaved }: { category?: CategoryItem;
         </label>
 
         <div className="grid w-full gap-5">
-          <AdminField label="Category name"><input required value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" maxLength={40} /></AdminField>
-          <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from category name" maxLength={60} /></AdminField>
+          <AdminField label="Category name"><input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="field-input" /></AdminField>
+          <AdminField label="URL slug"><input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })} className="field-input" placeholder="Generated from category name" /></AdminField>
         </div>
       </div>
 
