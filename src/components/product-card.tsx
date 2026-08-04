@@ -103,7 +103,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           </div>
         )}
 
-        <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-extrabold text-ink">
             {formatPrice(product.price)}
             {product.compareAtPrice ? (
@@ -116,7 +116,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             type="button"
             onClick={handleAdd}
             disabled={product.stock < 1}
-            className={`button-press flex min-h-11 items-center gap-1.5 px-2 text-xs font-bold transition-colors disabled:bg-muted ${
+            className={`button-press flex min-h-11 w-full shrink-0 items-center justify-center gap-1.5 px-3 text-xs font-bold transition-colors disabled:bg-muted sm:w-auto ${
               added ? "bg-success text-paper" : "bg-ink text-paper hover:bg-cobalt"
             }`}
             aria-label={added ? `${product.name} added to bag` : `Add ${product.name} to bag`}
