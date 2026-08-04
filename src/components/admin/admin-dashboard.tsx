@@ -489,9 +489,9 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
           ...draft,
           slug: draft.slug || slugify(draft.name),
           sizes: sizeInput.split(",").map((size) => size.trim()).filter(Boolean),
-          price: Number(priceInput),
-          compareAtPrice: comparePriceInput ? Number(comparePriceInput) : undefined,
-          stock: Number(stockInput),
+          price: Number(priceInput.replace(/,/g, "")),
+          compareAtPrice: comparePriceInput ? Number(comparePriceInput.replace(/,/g, "")) : undefined,
+          stock: Number(stockInput.replace(/,/g, "")),
         },
         previews.map((preview) => preview.file),
       );
