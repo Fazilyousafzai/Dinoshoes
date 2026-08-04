@@ -109,17 +109,21 @@ function fromReviewRow(row: Record<string, unknown>): Review {
 }
 
 function toProductRow(product: Product) {
+  const safeName = product.name?.trim().length >= 2 ? product.name.trim() : "Unnamed Product";
+  const safeDesc = product.description?.trim().length >= 20 ? product.description.trim() : "No description provided.";
+  const safePrice = product.price >= 0 ? product.price : 0;
+  
   return {
     id: product.id,
     slug: product.slug,
-    name: product.name,
-    category: product.category,
-    description: product.description,
-    price: product.price,
-    compare_at_price: product.compareAtPrice ?? null,
+    name: safeName,
+    category: product.category || "studs",
+    description: safeDesc,
+    price: safePrice,
+    compare_at_price: product.compareAtPrice && product.compareAtPrice >= safePrice ? product.compareAtPrice : null,
     images: product.images,
     sizes: product.sizes,
-    stock: product.stock,
+    stock: product.stock >= 0 ? product.stock : 0,
     featured: product.featured,
     badge: product.badge ?? null,
     active: product.active,
