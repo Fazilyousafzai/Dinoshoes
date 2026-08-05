@@ -35,22 +35,22 @@ const categories = [
 
 export function CategoryGrid() {
   return (
-    <section className="mx-auto max-w-[1400px] px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
-      <h2 className="display-type max-w-[12ch] text-5xl leading-[0.92] text-ink sm:text-6xl">
+    <section className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <h2 className="display-type max-w-[12ch] text-4xl leading-[0.92] text-ink sm:text-5xl">
         START WITH YOUR POSITION.
       </h2>
-      <p className="mt-4 max-w-xl text-base leading-7 text-ink-soft">
-        Browse the four essentials separately, or bring them together in the kit builder.
+      <p className="mt-3 max-w-xl text-sm leading-6 text-ink-soft sm:text-base sm:leading-7">
+        Browse the essentials separately, or bring them together in the kit builder.
       </p>
 
-      <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 md:mx-0 md:grid md:grid-cols-12 md:grid-rows-2 md:overflow-visible lg:gap-5">
+      <div className="no-scrollbar mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-3 md:mx-0 md:grid md:grid-cols-12 md:grid-rows-[200px_200px] md:overflow-visible lg:gap-4">
         {categories.map((category) => (
           <article
             key={category.name}
             className={`w-[82vw] max-w-[360px] shrink-0 snap-start md:w-auto md:max-w-none ${category.className}`}
           >
-            <Link href={category.href} className="group flex h-full flex-col bg-surface">
-              <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:min-h-[250px] md:flex-1 md:aspect-auto">
+            <Link href={category.href} className="group flex h-full flex-col overflow-hidden bg-surface">
+              <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:flex-1 md:aspect-auto">
                 <Image
                   src={category.image}
                   alt={category.name}
@@ -59,13 +59,12 @@ export function CategoryGrid() {
                   className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025]"
                 />
               </div>
-              <div className="grid min-h-[106px] grid-cols-[minmax(0,1fr)_44px] items-center gap-4 border border-t-0 border-line px-4 py-4 sm:px-5">
+              <div className="grid grid-cols-[minmax(0,1fr)_40px] items-center gap-3 border border-t-0 border-line px-3 py-2.5 sm:px-4">
                 <div className="min-w-0">
-                  <h3 className="text-lg font-extrabold text-ink">{category.name}</h3>
-                  <p className="mt-1 min-h-10 text-sm leading-5 text-muted">{category.description}</p>
+                  <h3 className="text-sm font-extrabold text-ink">{category.name}</h3>
                 </div>
-                <span className="flex size-11 shrink-0 items-center justify-center bg-ink text-paper transition-colors group-hover:bg-cobalt">
-                  <ArrowUpRight size={20} weight="bold" />
+                <span className="flex size-9 shrink-0 items-center justify-center bg-ink text-paper transition-colors group-hover:bg-cobalt">
+                  <ArrowUpRight size={16} weight="bold" />
                 </span>
               </div>
             </Link>
