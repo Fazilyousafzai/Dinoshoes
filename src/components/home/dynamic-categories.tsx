@@ -45,7 +45,7 @@ export function DynamicCategories() {
             )}`}
           >
             <Link href={`/shop?category=${category.slug}`} className="group flex h-full flex-col bg-surface">
-              <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:min-h-[250px] md:flex-1 md:aspect-auto">
+              <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong md:min-h-[140px] md:flex-1 md:aspect-auto lg:min-h-[180px]">
                 <ProductImage
                   src={category.image}
                   alt={category.name}
