@@ -20,11 +20,11 @@ export function SiteFooter() {
                 <span className="sr-only">Facebook</span>
                 <FacebookLogo size={28} weight="fill" />
               </a>
-              <a href="https://www.tiktok.com/@sohaildino7?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              <a href="https://www.tiktok.com/@dino.football.bra?_r=1&_t=ZN-98ectQwz7BP" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 <span className="sr-only">TikTok</span>
                 <TiktokLogo size={28} weight="fill" />
               </a>
-              <a href="https://wa.me/923319441845" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              <a href="https://wa.me/923429009143" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 <span className="sr-only">WhatsApp</span>
                 <WhatsappLogo size={28} weight="fill" />
               </a>

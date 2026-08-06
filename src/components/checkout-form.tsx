@@ -56,7 +56,7 @@ export function CheckoutForm() {
       });
       message += `\n*Total:* ${formatPrice(cartTotal)}`;
 
-      const whatsappNumber = "923319441845"; // Client's WhatsApp number (country code without +)
+      const whatsappNumber = "923429009143"; // Client's WhatsApp number (country code without +)
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
@@ -82,7 +82,7 @@ export function CheckoutForm() {
         <p className="mt-4 max-w-md text-base leading-7 text-ink-soft">
           We have redirected you to WhatsApp to complete your order. If the chat didn't open automatically, please click below.
         </p>
-        <button onClick={() => window.open(`https://wa.me/923319441845`, "_blank")} className="button-press mt-7 min-h-12 bg-action px-6 py-3 font-extrabold text-[#f7f7f4] hover:bg-action-hover">
+        <button onClick={() => window.open(`https://wa.me/923429009143`, "_blank")} className="button-press mt-7 min-h-12 bg-action px-6 py-3 font-extrabold text-[#f7f7f4] hover:bg-action-hover">
           Open WhatsApp
         </button>
         <Link href="/shop" className="mt-4 text-sm font-bold text-ink underline hover:text-cobalt">
