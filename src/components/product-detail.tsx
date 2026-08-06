@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   ShoppingBagOpen,
   Star,
+  X,
 } from "@phosphor-icons/react";
 import { useStore } from "./app-provider";
 import { ProductCard } from "./product-card";
@@ -24,6 +25,7 @@ export function ProductDetail({ slug }: { slug: string }) {
   const [size, setSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   useEffect(() => {
     if (!added) return;
@@ -73,15 +75,20 @@ export function ProductDetail({ slug }: { slug: string }) {
 
         <div className="mt-3 grid gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-14">
           <div>
-            <div className="relative aspect-[4/3] overflow-hidden bg-paper-strong">
+            <button
+              type="button"
+              className="group relative aspect-[4/3] w-full overflow-hidden bg-paper-strong"
+              onClick={() => setIsLightboxOpen(true)}
+              aria-label="Open image in fullscreen"
+            >
               <ProductImage
                 src={product.images[imageIndex] ?? product.images[0]}
                 alt={product.name}
                 priority
                 sizes="(max-width: 1023px) 100vw, 58vw"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
               />
-            </div>
+            </button>
             {product.images.length > 1 ? (
               <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto">
                 {product.images.map((image, index) => (
@@ -213,6 +220,28 @@ export function ProductDetail({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 sm:p-6 lg:p-8">
+          <button
+            type="button"
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute right-4 top-4 z-10 flex size-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-6 sm:top-6"
+            aria-label="Close image"
+          >
+            <X size={24} weight="bold" />
+          </button>
+          
+          <div className="relative h-full w-full max-w-7xl">
+            <ProductImage
+              src={product.images[imageIndex] ?? product.images[0]}
+              alt={product.name}
+              sizes="100vw"
+              className="h-full w-full object-contain"
+            />
+          </div>
+        </div>
+      )}
 
       {productReviews.length ? (
         <section className="border-y border-line bg-surface">
