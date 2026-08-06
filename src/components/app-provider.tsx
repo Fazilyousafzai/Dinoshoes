@@ -350,7 +350,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const product: Product = {
         ...draft,
         id,
-        slug: draft.slug || slugify(draft.name),
+        slug: draft.slug || `${slugify(draft.name || "unnamed")}-${Math.random().toString(36).substring(2, 6)}`,
         images: [...draft.images, ...newImages],
         createdAt: draft.createdAt ?? new Date().toISOString(),
       };

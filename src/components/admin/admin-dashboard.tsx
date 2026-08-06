@@ -487,7 +487,7 @@ function ProductForm({ product, onClose, onSaved }: { product?: Product; onClose
       const saved = await saveProduct(
         {
           ...draft,
-          slug: draft.slug || slugify(draft.name),
+          slug: draft.slug || `${slugify(draft.name || "unnamed")}-${Math.random().toString(36).substring(2, 6)}`,
           sizes: sizeInput.split(",").map((size) => size.trim()).filter(Boolean),
           price: Number(priceInput.replace(/,/g, "")),
           compareAtPrice: comparePriceInput ? Number(comparePriceInput.replace(/,/g, "")) : undefined,
